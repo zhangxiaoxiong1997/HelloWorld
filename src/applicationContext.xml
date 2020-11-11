@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	">
+	<context:property-placeholder location="jdbc.properties"/>
+   <!--配置Spring的数据源  -->
+   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${a.driverClassName}" />
+        <property name="url" value="${a.url}" />
+        <property name="username" value="${a.username}" />
+        <property name="password" value="${a.password}" />
+    </bean>
+   <!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/bank?characterEncoding=utf8" />
+        <property name="username" value="root" />
+        <property name="password" value="rootroot" />
+    </bean> -->
+    <!--配置sqlSessionFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <!--引用数据源组件  -->
+      <property name="dataSource" ref="dataSource"></property>
+      <!--引用mybatis的核心配置文件  -->
+      <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+      <!--配置sql映射文件  -->
+      <property name="mapperLocations">
+        <list>
+             <value>classpath:com/dao/*.xml</value>
+        </list>
+      </property>
+    </bean>
+    <!-- 配置sqlSessionTemplate模板（相当于每次运行都会得到一个新的sqlsession,每个方法都有一个sqlsession,所以线程安全） -->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+    	<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	 <property name="basePackage" value="com.dao"></property>
+    </bean>
+	
+    <context:component-scan base-package="com.service"></context:component-scan>
+   
+ 
+    <bean id="txmanage" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     	<property name="dataSource" ref="dataSource"></property>
+    </bean>
+   <tx:annotation-driven transaction-manager="txmanage"/>
+</beans>

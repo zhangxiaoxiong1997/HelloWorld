@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.IBankDao">
+  <update id="updatezhangsan" parameterType="java.lang.Integer">
+  update bank set bank.acount=bank.acount+200 where bank.bid=#{bid}
+  </update>
+  <update id="updatelisi" parameterType="java.lang.Integer">
+  update bank b set b.acount=b.acount-200 where b.bid=#{bid}
+  </update>
+</mapper>
